@@ -8,21 +8,21 @@ package za.ac.cput.timetableproject.domain;
  *
  * @author nkulu
  */
-public class WorkerClass {
-    private double Venue_id;
+public class Venue {
+    private int Venue_id;
     private String Description;
     private int Capacity;
 
-    public WorkerClass() {
+    public Venue() {
     }
 
-    public WorkerClass(double Venue_id, String Description, int Capacity) {
+    public Venue(int Venue_id, String Description, int Capacity) {
         this.Venue_id = Venue_id;
         this.Description = Description;
         this.Capacity = Capacity;
     }
 
-    public double getVenue_id() {
+    public int getVenue_id() {
         return Venue_id;
     }
 
@@ -34,7 +34,7 @@ public class WorkerClass {
         return Capacity;
     }
 
-    public void setVenue_id(double Venue_id) {
+    public void setVenue_id(int Venue_id) {
         this.Venue_id = Venue_id;
     }
 

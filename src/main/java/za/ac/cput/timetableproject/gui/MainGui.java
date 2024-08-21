@@ -147,7 +147,7 @@ public class MainGui extends JFrame {
 
         // Initial image panel
         JPanel imagePanel = new JPanel(new BorderLayout());
-        ImageIcon imageIcon = new ImageIcon("C:\\Users\\DELL\\Desktop\\doc\\download.png"); // Ensure the path is correct
+        ImageIcon imageIcon = new ImageIcon("C:\\Users\\hloni\\downloads\\cput.png"); // Ensure the path is correct
         JLabel imageLabel = new JLabel(imageIcon);
         imagePanel.add(imageLabel, BorderLayout.CENTER);
 
