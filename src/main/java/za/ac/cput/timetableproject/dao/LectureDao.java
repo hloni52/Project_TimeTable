@@ -28,6 +28,7 @@ public class LectureDao {
         try {
             if (this.con == null || this.con.isClosed()) {  // Check if the connection is null or closed
                 this.con = DatabaseConnection.createConnection();
+                createLectureTable();
                 JOptionPane.showMessageDialog(null, "Connection Established");
             }
         } catch (SQLException k) {
