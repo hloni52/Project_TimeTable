@@ -17,11 +17,12 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import za.ac.cput.timetableproject.connection.DatabaseConnection;
 import za.ac.cput.timetableproject.domain.TimeTable;
+import za.ac.cput.timetableproject.domain.*;
 
 public class TimeTableDao {
 
-    PreparedStatement ps;
-    Connection con;
+   private PreparedStatement ps;
+    private Connection con;
 
     public TimeTableDao() {
         try {
@@ -34,33 +35,58 @@ public class TimeTableDao {
         }
     }
 
-   
-    
     public void createTable() throws SQLException {
         String createTableSQL = "CREATE TABLE TimeTable ("
                 + "timeTableId INT PRIMARY KEY, "
-                + "venueId INT, "
+                + "groupId INT, "
                 + "subjectId INT, "
-                + "lectureId INT, "
-                + "FOREIGN KEY (venueId) REFERENCES Venue(venueId), "
-                + "FOREIGN KEY (subjectId) REFERENCES Subject(subjectId), "
-                + "FOREIGN KEY (lectureId) REFERENCES Lecture(lectureId))";
+                + "lecturerId INT, "
+                + "venueId INT, "
+                + "slotId INT, "
+                + "FOREIGN KEY (groupId) REFERENCES Groups(groupId), "
+                + "FOREIGN KEY (subjectId) REFERENCES Subjects(subjectId), "
+                + "FOREIGN KEY (lecturerId) REFERENCES Lecturers(lecturerId), "
+                + "FOREIGN KEY (venueId) REFERENCES Venues(venueId), "
+                + "FOREIGN KEY (slotId) REFERENCES Slots(slotId))";
         ps = con.prepareStatement(createTableSQL);
         ps.execute();
     }
 
     // Method to insert a TimeTable record
     public void insert(TimeTable table) throws SQLException {
-        String insertSQL = "INSERT INTO TimeTable (timeTableId, venueId, subjectId, lectureId) VALUES (?, ?, ?, ?)";
+        String insertSQL = "INSERT INTO TimeTable (timeTableId, groupId, subjectId, lecturerId, venueId, slotId) VALUES (?, ?, ?, ?, ?, ?)";
         ps = con.prepareStatement(insertSQL);
         ps.setInt(1, table.getTimeTableId());
-        ps.setInt(2, table.getVenueId());
+        ps.setInt(2, table.getGroupId());
         ps.setInt(3, table.getSubjectId());
         ps.setInt(4, table.getLectureId());
+        ps.setInt(5, table.getVenueId());
+        ps.setInt(6, table.getSlotId());
         ps.executeUpdate();
     }
 
-    
+    // Method to update a TimeTable record
+    public void update(TimeTable table) throws SQLException {
+        String updateSQL = "UPDATE TimeTable SET groupId = ?, subjectId = ?, lecturerId = ?, venueId = ?, slotId = ? WHERE timeTableId = ?";
+        ps = con.prepareStatement(updateSQL);
+        ps.setInt(1, table.getGroupId());
+        ps.setInt(2, table.getSubjectId());
+        ps.setInt(3, table.getLectureId());
+        ps.setInt(4, table.getVenueId());
+        ps.setInt(5, table.getSlotId());
+        ps.setInt(6, table.getTimeTableId());
+        ps.executeUpdate();
+    }
+
+    // Method to delete a TimeTable record
+    public void delete(int timeTableId) throws SQLException {
+        String deleteSQL = "DELETE FROM TimeTable WHERE timeTableId = ?";
+        ps = con.prepareStatement(deleteSQL);
+        ps.setInt(1, timeTableId);
+        ps.executeUpdate();
+    }
+
+    // Method to retrieve all TimeTable records
     public List<TimeTable> getAll() throws SQLException {
         String selectSQL = "SELECT * FROM TimeTable";
         ps = con.prepareStatement(selectSQL);
@@ -70,9 +96,11 @@ public class TimeTableDao {
         while (rs.next()) {
             TimeTable timeTable = new TimeTable();
             timeTable.setTimeTableId(rs.getInt("timeTableId"));
-            timeTable.setVenueId(rs.getInt("venueId"));
+            timeTable.setGroupId(rs.getInt("groupId"));
             timeTable.setSubjectId(rs.getInt("subjectId"));
-            timeTable.setLectureId(rs.getInt("lectureId"));
+            timeTable.setLectureId(rs.getInt("lecturerId"));
+            timeTable.setVenueId(rs.getInt("venueId"));
+            timeTable.setSlotId(rs.getInt("slotId"));
             timeTables.add(timeTable);
         }
         return timeTables;

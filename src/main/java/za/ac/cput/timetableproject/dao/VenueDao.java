@@ -225,5 +225,25 @@ public class VenueDao {
     }
     return false;
 }
+     public ArrayList<String> Venues() {
+        ArrayList<String> list = new ArrayList<>();
+        String sql = "SELECT * FROM Venue";  // Adjust the SQL if needed
+
+        try {
+            ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs != null) {
+                while (rs.next()) {
+                    int vId = rs.getInt(1);  // Assuming ID is the first column
+                    String name = rs.getString(2);  // Assuming name is the second column
+                    list.add(name);
+                }
+            }
+        } catch (SQLException k) {
+            k.printStackTrace();  // Print the exception for debugging
+        }
+        return list;
+    }
 
 }

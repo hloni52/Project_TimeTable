@@ -13,6 +13,25 @@ public class TimeTable {
     private int venueId;
     private int subjectId;
     private int lectureId;
+    private int groupId;
+    private int slotId;
+
+    public int getSlotId() {
+        return slotId;
+    }
+
+    public void setSlotId(int slotId) {
+        this.slotId = slotId;
+    }
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+    
+    
 
     // Getters and Setters
     public int getTimeTableId() {

@@ -7,12 +7,16 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import za.ac.cput.timetableproject.dao.*;
+import za.ac.cput.timetableproject.gui.GroupsGui;
 
 public class GenerateGui extends JPanel {
 
-    private JComboBox<String> groupComboBox;
+    private JComboBox groupComboBox;
     private JComboBox<String> lecturerComboBox;
     private JComboBox<String> slotComboBox;
     private JComboBox<String> typeComboBox;
@@ -21,6 +25,9 @@ public class GenerateGui extends JPanel {
     private JComboBox<String> venueComboBox;
     private JTable timetableTable;
     private DefaultTableModel tableModel;
+     String groups[] = null ,venue [] = null  , subject[] = null,lecture [] = null;
+     GroupsDao gDao;
+     VenueDao vDao;
 
     private Map<String, Map<String, String>> groupTimetables;
     private Map<String, String> lecturerAssignments;
@@ -31,7 +38,10 @@ public class GenerateGui extends JPanel {
         groupTimetables = new HashMap<>();
         lecturerAssignments = new HashMap<>();
 
-        groupComboBox = new JComboBox<>(new String[]{"Group A", "Group B", "Group C"});
+            // Create a JComboBox with the array of group names
+            populateGroup();
+            populateVenue();
+            populateSubject();
         lecturerComboBox = new JComboBox<>(new String[]{"Lecturer 1", "Lecturer 2", "Lecturer 3"});
         slotComboBox = new JComboBox<>(new String[]{
             "08:30 - 09:10", "09:15 - 09:55", "10:00 - 10:40", "10:45 - 11:25",
@@ -40,8 +50,8 @@ public class GenerateGui extends JPanel {
         });
         typeComboBox = new JComboBox<>(new String[]{"Lecture", "Tutorial", "Lab"});
         dayComboBox = new JComboBox<>(new String[]{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"});
-        subjectComboBox = new JComboBox<>(new String[]{"Math", "Physics", "Computer Science"});
-        venueComboBox = new JComboBox<>(new String[]{"Venue 1", "Venue 2", "Venue 3"});
+        
+       
 
         JPanel inputPanel = new JPanel(new GridLayout(9, 2, 10, 10));
         inputPanel.add(new JLabel("Select Group:"));
@@ -67,8 +77,8 @@ public class GenerateGui extends JPanel {
         add(inputPanel, BorderLayout.NORTH);
 
         String[] columnNames = {"Day", "08:30 - 09:10", "09:15 - 09:55", "10:00 - 10:40", "10:45 - 11:25",
-                "11:30 - 12:10", "12:15 - 12:55", "13:00 - 13:40", "13:45 - 14:25",
-                "14:30 - 15:10", "15:15 - 15:55", "16:00 - 16:40", "16:45 - 17:25"};
+            "11:30 - 12:10", "12:15 - 12:55", "13:00 - 13:40", "13:45 - 14:25",
+            "14:30 - 15:10", "15:15 - 15:55", "16:00 - 16:40", "16:45 - 17:25"};
         tableModel = new DefaultTableModel(columnNames, 5);
         timetableTable = new JTable(tableModel);
 
@@ -226,6 +236,53 @@ public class GenerateGui extends JPanel {
             }
         }
     }
+   
+    // Inside your GUI class, where you want to populate the JComboBox
+    public void populateGroup(){
+        try{
+            gDao = new GroupsDao();
+            groups = new String[gDao.Groups().size()];
+            for(int i = 0; i < gDao.Groups().size();i++){
+               groups[i] = gDao.Groups().get(i);
+            }
+            
+            }
+            catch(Exception k){
+                
+            }
+        //groupComboBox = new JComboBox(groups);
+        groupComboBox = new JComboBox(groups);
+        
+    }
+    public void populateVenue(){
+        
+        try{
+            vDao  = new VenueDao();
+            venue = new String[vDao.Venues().size()];
+            for(int i = 0; i < vDao.Venues().size();i++){
+               venue[i] = vDao.Venues().get(i);
+            }
+             venueComboBox = new JComboBox(venue);
+            
+            
+        }catch(SQLException k){
+            
+        }
+    }
+   
+
+    public void populateSubject() {
+    try {
+        SubjectDao sDao = new SubjectDao();
+        subject = new String[sDao.Subjects().size()];
+        for (int i = 0; i < sDao.Subjects().size(); i++) {
+            subject[i] = sDao.Subjects().get(i);
+        }
+        subjectComboBox = new JComboBox<>(subject);
+    } catch (Exception k) {
+        k.printStackTrace();  
+    }
 }
 
-
+    
+}
