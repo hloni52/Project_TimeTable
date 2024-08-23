@@ -15,6 +15,20 @@ public class TimeTable {
     private int lectureId;
     private int groupId;
     private int slotId;
+    
+    public TimeTable(int  groupId,int subjectId ,int lecture,int venue ,int slotId){
+        
+        this.groupId = groupId;
+        this.venueId = venueId;
+        this.subjectId = subjectId;
+        this.lectureId = lectureId;
+        this.slotId = slotId;
+    }
+
+    public TimeTable() {
+    }
+    
+    
 
     public int getSlotId() {
         return slotId;

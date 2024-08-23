@@ -36,7 +36,7 @@ public class SubjectDao {
 
     // Create Subject table
     public void createSubjectTable() {
-        String sql = "CREATE TABLE Subject ("
+        String sql = "CREATE TABLE Subject("
                    + "subjectCode INT PRIMARY KEY, "
                    + "description VARCHAR(255))";
 
@@ -189,8 +189,8 @@ public class SubjectDao {
         }
         return false;
     }
-    public ArrayList<String> Subjects() {
-        ArrayList<String> list = new ArrayList<>();
+    public ArrayList<Subject> Subjects() {
+        ArrayList<Subject> list = new ArrayList<>();
         String sql = "SELECT * FROM Subject";  // Adjust the SQL if needed
 
         try {
@@ -201,7 +201,7 @@ public class SubjectDao {
                 while (rs.next()) {
                     int sId = rs.getInt(1);  // Assuming ID is the first column
                     String code = rs.getString(2);  // Assuming code is the second column
-                    list.add(code);
+                    list.add(new Subject(sId,code));
                 }
             }
         } catch (SQLException k) {

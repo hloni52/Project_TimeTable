@@ -1,3 +1,4 @@
+
 package za.ac.cput.timetableproject.dao;
 
 import java.sql.*;
@@ -9,13 +10,14 @@ import za.ac.cput.timetableproject.domain.Slot;
 
 public class SlotDao {
 
-    Connection con;
-    PreparedStatement ps;
+    private Connection con;
+    private PreparedStatement ps;
 
     public SlotDao() {
         try {
-            if (this.con == null || this.con.isClosed()) {  
+            if (this.con == null || this.con.isClosed()) {
                 this.con = DatabaseConnection.createConnection();
+                createSlotTable();
                 JOptionPane.showMessageDialog(null, "Connection Established");
             }
         } catch (SQLException k) {
@@ -23,36 +25,49 @@ public class SlotDao {
         }
     }
 
-    public void createTable() {
+    public void createSlotTable() {
         String createTableSQL = "CREATE TABLE Slot (" +
-                                "slotId INT PRIMARY KEY, " +
-                                "periodNumber INT, " +
-                                "slotNumber INT," +
-                                "dayOfWeek VARCHAR(10))";
+                "slotId INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " + // Auto-increment for primary key
+                "slotTime VARCHAR(20), " + // Use VARCHAR to store time ranges as strings
+                "dayOfWeek VARCHAR(10))";  // Day of the week as a string
 
         try {
             ps = con.prepareStatement(createTableSQL);
             ps.execute();
         } catch (SQLException k) {
-            JOptionPane.showMessageDialog(null, "SQL error occurred: " + k.getMessage());
+            if (k.getSQLState().equals("X0Y32")) { // SQLState for table already exists
+                JOptionPane.showMessageDialog(null, "Table already exists.");
+            } else {
+                JOptionPane.showMessageDialog(null, "SQL error occurred: " + k.getMessage());
+            }
         } finally {
             closeResources(ps);
         }
     }
+     public int getSlotIdBySlotTime(String slotTime) throws SQLException {
+        String selectSQL = "SELECT slotId FROM Slot WHERE slotTime = ?";
+        ps = con.prepareStatement(selectSQL);
+        ps.setString(1, slotTime);
+        ResultSet rs = ps.executeQuery();
 
+        if (rs.next()) {
+            return rs.getInt("slotId");
+        } else {
+            throw new SQLException("No slot found with the time: " + slotTime);
+        }
+    }
     // Method to insert a Slot record
     public void insert(Slot slot) {
-        String insertSQL = "INSERT INTO Slot (slotId, periodNumber, slotNumber, dayOfWeek) VALUES (?, ?, ?, ?)";
+        String insertSQL = "INSERT INTO Slot (slotTime, dayOfWeek) VALUES (?, ?)";
 
         try {
             ps = con.prepareStatement(insertSQL);
-            ps.setInt(1, slot.getSlotId());
-            ps.setInt(2, slot.getPeriodNumber());
-            ps.setInt(3, slot.getSlotNumber());
-            ps.setString(4, slot.getDayOfWeek());
+            ps.setString(1, slot.getSlotTime());
+            ps.setString(2, slot.getDayOfWeek());
+            
             ps.executeUpdate();
         } catch (SQLException k) {
-            JOptionPane.showMessageDialog(null, "SQL error occurred: " + k.getMessage());
+            JOptionPane.showMessageDialog(null, "SQL error occurred while inserting: " + k.getMessage());
         } finally {
             closeResources(ps);
         }
@@ -61,20 +76,21 @@ public class SlotDao {
     // Method to retrieve all Slot records
     public List<Slot> getAll() throws SQLException {
         String selectSQL = "SELECT * FROM Slot";
-        PreparedStatement preparedStatement = con.prepareStatement(selectSQL);
-        ResultSet rs = preparedStatement.executeQuery();
+        ps = con.prepareStatement(selectSQL);
+        ResultSet rs = ps.executeQuery();
 
         List<Slot> list = new ArrayList<>();
         while (rs.next()) {
-            Slot slot = new Slot();
-            slot.setSlotId(rs.getInt("slotId"));
-            slot.setPeriodNumber(rs.getInt("periodNumber"));
-            slot.setSlotNumber(rs.getInt("slotNumber"));
-            slot.setDayOfWeek(rs.getString("dayOfWeek"));
-            list.add(slot);
+            int key = rs.getInt("slotId");
+            String slotTime = rs.getString("slotTime");
+            String dayOfWeek = rs.getString("dayOfWeek");
+            
+            list.add(new Slot(key, slotTime, dayOfWeek));
         }
+        
         return list;
     }
+    
 
     // Utility method to close resources
     private void closeResources(AutoCloseable resource) {
@@ -87,3 +103,4 @@ public class SlotDao {
         }
     }
 }
+

@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import za.ac.cput.timetableproject.dao.*;
 import za.ac.cput.timetableproject.domain.Group;
 import za.ac.cput.timetableproject.domain.Lecture;
@@ -127,11 +129,17 @@ public class GenerateGui extends JPanel {
         
          add(new JScrollPane(timetableTable), BorderLayout.CENTER);
         
-        generateButton.addActionListener(e -> generateTimetable());
+        generateButton.addActionListener(e -> {
+            try {
+                generateTimetable();
+            } catch (Exception ex) {
+                Logger.getLogger(GenerateGui.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         saveButton.addActionListener(e -> saveTimetable());
     }
 
-    private void generateTimetable() {
+    private void generateTimetable() throws Exception {
         Group group = (Group) groupComboBox.getSelectedItem();
         String selectedGroup = group.getGroupName();
         int gk = group.getGroupId();
@@ -156,6 +164,7 @@ public class GenerateGui extends JPanel {
          String selectedVenue = venue.toString();
          int vk = venue.getVenue_id();
          
+        ss = new SlotDao();
          int slotKey = ss.getSlotIdBySlotTime(slot);
          
          
@@ -163,7 +172,8 @@ public class GenerateGui extends JPanel {
         
         ///// thisisis
         saveSlotToDatabase(slot, day);
-
+        saveAllToTimeTableDatabase(gk,sk,lk,vk,slotKey);
+        
         if (slot.equals("13:00 - 13:40")) {
             JOptionPane.showMessageDialog(this, "13:00 to 13:40 is a break. Please select a different time slot.", "Break Time", JOptionPane.WARNING_MESSAGE);
             return;
@@ -252,6 +262,7 @@ public class GenerateGui extends JPanel {
         }
 
         tableModel.setValueAt(cellValue, rowIndex, columnIndex);
+        
     }
 
     private void saveTimetable() {
@@ -347,16 +358,20 @@ public class GenerateGui extends JPanel {
     private void saveAllToTimeTableDatabase(int group, int subject, int lecture, int venue, int slot) {
         TimeTable timeTableDao = new TimeTable(group,subject,lecture,venue,slot);
         
+        TimeTableDao ds = new TimeTableDao();
+        try{
+        ds.createTable();
+        ds.insert(timeTableDao);
+        
+        }catch(Exception l){
+            
+        }
         
 //        ArrayList<TimeTable> list = new ArrayList();
 //        list.add()
        
-        try{
-        timeTableDao.createTable();
-        timeTableDao.insert(table);
-        }catch(Exception k){
-            
-        }
+        
+       
         
         
         

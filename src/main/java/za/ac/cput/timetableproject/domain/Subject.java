@@ -40,10 +40,7 @@ public class Subject {
 
     @Override
     public String toString() {
-        return "Subject{" +
-               "subjectCode='" + subjectCode + '\'' +
-               ", description='" + description + '\'' +
-               '}';
+        return  subjectCode+" "   + description   ;
     }
 }
 

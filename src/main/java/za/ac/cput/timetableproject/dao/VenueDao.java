@@ -225,8 +225,8 @@ public class VenueDao {
     }
     return false;
 }
-     public ArrayList<String> Venues() {
-        ArrayList<String> list = new ArrayList<>();
+     public ArrayList<Venue> Venues() {
+        ArrayList<Venue> list = new ArrayList<>();
         String sql = "SELECT * FROM Venue";  // Adjust the SQL if needed
 
         try {
@@ -236,8 +236,10 @@ public class VenueDao {
             if (rs != null) {
                 while (rs.next()) {
                     int vId = rs.getInt(1);  // Assuming ID is the first column
-                    String name = rs.getString(2);  // Assuming name is the second column
-                    list.add(name);
+                    String name = rs.getString(2);
+                    int c = rs.getInt(3);
+                    // Assuming name is the second column
+                    list.add(new Venue(vId,name,c));
                 }
             }
         } catch (SQLException k) {

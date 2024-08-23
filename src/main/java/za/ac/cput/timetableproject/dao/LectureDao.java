@@ -219,9 +219,9 @@ public class LectureDao {
         }
         return false;
     }
-    public ArrayList<String> Lecture(){
+    public ArrayList<Lecture> Lecture(){
         String sql = "SELECT * FROM Lecture";
-        ArrayList<String> list = new ArrayList();
+        ArrayList<Lecture> list = new ArrayList();
         try{
             
             ps = con.prepareStatement(sql);
@@ -235,7 +235,7 @@ public class LectureDao {
                    String sName = rs.getString(3);
                    String intial = rs.getString(4);
                    
-                   list.add(id+"- " + name+"- " +sName+"- "+ intial);
+                   list.add(new Lecture(id,name,sName,intial) );
                }
            }
         }catch(Exception k){

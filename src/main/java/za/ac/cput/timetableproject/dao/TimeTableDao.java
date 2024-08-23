@@ -38,37 +38,46 @@ public class TimeTableDao {
 
     public void createTable() throws SQLException {
         String createTableSQL = "CREATE TABLE TimeTable ("
-                + "timeTableId INT PRIMARY KEY, "
+                + "timeTableId INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
                 + "groupId INT, "
                 + "subjectId INT, "
-                + "lecturerId INT, "
+                + "lectureId INT, "
                 + "venueId INT, "
                 + "slotId INT, "
                 + "FOREIGN KEY (groupId) REFERENCES Groups(groupId), "
-                + "FOREIGN KEY (subjectId) REFERENCES Subjects(subjectId), "
-                + "FOREIGN KEY (lecturerId) REFERENCES Lecturers(lecturerId), "
-                + "FOREIGN KEY (venueId) REFERENCES Venues(venueId), "
-                + "FOREIGN KEY (slotId) REFERENCES Slots(slotId))";
+                + "FOREIGN KEY (subjectId) REFERENCES Subject(subjectId), "
+                + "FOREIGN KEY (lectureId) REFERENCES Lecture(lectureId), "
+                + "FOREIGN KEY (venueId) REFERENCES Venue(venueId), "
+                + "FOREIGN KEY (slotId) REFERENCES Slot(slotId))";
         ps = con.prepareStatement(createTableSQL);
         ps.execute();
     }
 
     // Method to insert a TimeTable record
-    public void insert(TimeTable table) throws SQLException {
-        String insertSQL = "INSERT INTO TimeTable (timeTableId, groupId, subjectId, lecturerId, venueId, slotId) VALUES (?, ?, ?, ?, ?, ?)";
-        ps = con.prepareStatement(insertSQL);
-        ps.setInt(1, table.getTimeTableId());
-        ps.setInt(2, table.getGroupId());
-        ps.setInt(3, table.getSubjectId());
-        ps.setInt(4, table.getLectureId());
-        ps.setInt(5, table.getVenueId());
-        ps.setInt(6, table.getSlotId());
+   public void insert(TimeTable table) throws SQLException {
+    // Exclude timeTableId from the INSERT statement
+    String insertSQL = "INSERT INTO TimeTable (groupId, subjectId, lectureId, venueId, slotId) VALUES (?, ?, ?, ?, ?)";
+    try (PreparedStatement ps = con.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
+        ps.setInt(1, table.getGroupId());
+        ps.setInt(2, table.getSubjectId());
+        ps.setInt(3, table.getLectureId());
+        ps.setInt(4, table.getVenueId());
+        ps.setInt(5, table.getSlotId());
         ps.executeUpdate();
+        
+        // Retrieve the generated key
+        try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                table.setTimeTableId(generatedId); // Set the auto-generated ID
+            }
+        }
     }
+}
 
     // Method to update a TimeTable record
     public void update(TimeTable table) throws SQLException {
-        String updateSQL = "UPDATE TimeTable SET groupId = ?, subjectId = ?, lecturerId = ?, venueId = ?, slotId = ? WHERE timeTableId = ?";
+        String updateSQL = "UPDATE TimeTable SET groupId = ?, subjectId = ?, lectureId = ?, venueId = ?, slotId = ? WHERE timeTableId = ?";
         ps = con.prepareStatement(updateSQL);
         ps.setInt(1, table.getGroupId());
         ps.setInt(2, table.getSubjectId());
@@ -99,7 +108,7 @@ public class TimeTableDao {
             timeTable.setTimeTableId(rs.getInt("timeTableId"));
             timeTable.setGroupId(rs.getInt("groupId"));
             timeTable.setSubjectId(rs.getInt("subjectId"));
-            timeTable.setLectureId(rs.getInt("lecturerId"));
+            timeTable.setLectureId(rs.getInt("lectureId"));
             timeTable.setVenueId(rs.getInt("venueId"));
             timeTable.setSlotId(rs.getInt("slotId"));
             timeTables.add(timeTable);

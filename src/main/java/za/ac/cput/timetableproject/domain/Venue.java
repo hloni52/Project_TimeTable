@@ -48,7 +48,7 @@ public class Venue {
 
     @Override
     public String toString() {
-        return "WorkerClass{" + "Venue_id=" + Venue_id + ", Description=" + Description + ", Capacity=" + Capacity + '}';
+        return  Venue_id + " "+ Description ;
     }
     
     
