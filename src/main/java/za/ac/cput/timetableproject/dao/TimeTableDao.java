@@ -28,6 +28,7 @@ public class TimeTableDao {
         try {
             if (this.con == null || this.con.isClosed()) {
                 this.con = DatabaseConnection.createConnection();
+                createTable();
                 JOptionPane.showMessageDialog(null, "Connection Established");
             }
         } catch (SQLException k) {

@@ -11,13 +11,20 @@ package za.ac.cput.timetableproject.domain;
 public class Slot {
     private int slotId;
     private int periodNumber;
-    private String startTime;
-    private String endTime;
+    private int slotNumber;
     private String dayOfWeek;
 
     // Getters and Setters
     public int getSlotId() {
         return slotId;
+    }
+
+    public int getSlotNumber() {
+        return slotNumber;
+    }
+
+    public void setSlotNumber(int slotNumber) {
+        this.slotNumber = slotNumber;
     }
 
     public void setSlotId(int slotId) {
@@ -32,21 +39,7 @@ public class Slot {
         this.periodNumber = periodNumber;
     }
 
-    public String getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
-
-    public String getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
-    }
+  
 
     public String getDayOfWeek() {
         return dayOfWeek;

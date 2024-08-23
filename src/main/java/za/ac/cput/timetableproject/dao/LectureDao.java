@@ -28,6 +28,7 @@ public class LectureDao {
         try {
             if (this.con == null || this.con.isClosed()) {  // Check if the connection is null or closed
                 this.con = DatabaseConnection.createConnection();
+                createLectureTable();
                 JOptionPane.showMessageDialog(null, "Connection Established");
             }
         } catch (SQLException k) {
@@ -218,5 +219,29 @@ public class LectureDao {
         }
         return false;
     }
-
+    public ArrayList<String> Lecture(){
+        String sql = "SELECT * FROM Lecture";
+        ArrayList<String> list = new ArrayList();
+        try{
+            
+            ps = con.prepareStatement(sql);
+           ResultSet rs =  ps.executeQuery();
+           
+           if(rs != null){
+               while(rs.next()){
+                   
+                   int id = rs.getInt(1);
+                   String name = rs.getString(2);
+                   String sName = rs.getString(3);
+                   String intial = rs.getString(4);
+                   
+                   list.add(id+"- " + name+"- " +sName+"- "+ intial);
+               }
+           }
+        }catch(Exception k){
+            
+        }
+        return list;
+    }
 }
+
