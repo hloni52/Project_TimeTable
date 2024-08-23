@@ -14,27 +14,37 @@ import java.util.Map;
 import za.ac.cput.timetableproject.dao.*;
 import za.ac.cput.timetableproject.domain.Group;
 import za.ac.cput.timetableproject.domain.Lecture;
+import za.ac.cput.timetableproject.domain.Slot;
 import za.ac.cput.timetableproject.domain.Subject;
+import za.ac.cput.timetableproject.domain.TimeTable;
 import za.ac.cput.timetableproject.domain.Venue;
 import za.ac.cput.timetableproject.gui.*;
+import za.ac.cput.timetableproject.dao.SlotDao;
 
 
 
 public class GenerateGui extends JPanel {
 
-    private JComboBox groupComboBox;
-    private JComboBox<String> lecturerComboBox;
+    private JComboBox <Group>groupComboBox;
+    private JComboBox<Lecture> lecturerComboBox;
     private JComboBox<String> slotComboBox;
     private JComboBox<String> typeComboBox;
     private JComboBox<String> dayComboBox;
-    private JComboBox<String> subjectComboBox;
-    private JComboBox<String> venueComboBox;
+    private JComboBox<Subject> subjectComboBox;
+    private JComboBox<Venue> venueComboBox;
     private JTable timetableTable;
     private DefaultTableModel tableModel;
+    ArrayList<Group> list;
+    ArrayList<Lecture> lectureList;
+    ArrayList<Slot> slotList;
+    ArrayList<Subject> subjectList;
+    ArrayList<Venue> venueList;
      String groups[] = null ,venue [] = null  , subject[] = null,lecture [] = null;
      GroupsDao gDao;
      VenueDao vDao;
       LectureDao lDao;
+      SubjectDao sDao;
+      SlotDao ss;
 
     private Map<String, Map<String, String>> groupTimetables;
     private Map<String, String> lecturerAssignments;
@@ -44,7 +54,12 @@ public class GenerateGui extends JPanel {
 
         groupTimetables = new HashMap<>();
         lecturerAssignments = new HashMap<>();
-
+        
+        groupComboBox = new JComboBox();
+         lecturerComboBox = new JComboBox();
+         subjectComboBox = new JComboBox();
+          venueComboBox = new JComboBox();
+        
             // Create a JComboBox with the array of group names
             populateGroup();
             populateVenue();
@@ -112,172 +127,42 @@ public class GenerateGui extends JPanel {
         
          add(new JScrollPane(timetableTable), BorderLayout.CENTER);
         
-//        // New panel for group comboBox and buttons
-//        JPanel controlPanel = new JPanel(new GridLayout(1,3));
-//        JComboBox<String> groupControlComboBox = new JComboBox<>(new String[]{"Groups"});
-//        JButton changeButton = new JButton("Change");
-//        JButton deleteButton = new JButton("Delete");
-//        
-//   // Creating buttons with hover effects
-//   
-//    changeButton.setBackground(Color.GRAY);
-//    changeButton.setForeground(Color.BLACK);
-//    changeButton.setOpaque(true);
-//    changeButton.setBorderPainted(false);
-//
-//    changeButton.addMouseListener(new java.awt.event.MouseAdapter() {
-//        @Override
-//        public void mouseEntered(java.awt.event.MouseEvent evt) {
-//            changeButton.setBackground(Color.BLUE);
-//        }
-//
-//        @Override
-//        public void mouseExited(java.awt.event.MouseEvent evt) {
-//            changeButton.setBackground(Color.GRAY);
-//        }
-//    });
-//
-//    //JButton deleteButton = new JButton("Delete");
-//    deleteButton.setBackground(Color.GRAY);
-//    deleteButton.setForeground(Color.BLACK);
-//    deleteButton.setOpaque(true);
-//    deleteButton.setBorderPainted(false);
-//
-//    deleteButton.addMouseListener(new java.awt.event.MouseAdapter() {
-//        @Override
-//        public void mouseEntered(java.awt.event.MouseEvent evt) {
-//            deleteButton.setBackground(Color.RED);
-//        }
-//
-//        @Override
-//        public void mouseExited(java.awt.event.MouseEvent evt) {
-//            deleteButton.setBackground(Color.GRAY);
-//        }
-//    });
-//
-//    // Adding buttons to the south panel
-//    JPanel southPanel = new JPanel();
-//    southPanel.add(groupComboBox); // Assuming you want to add this too
-//    southPanel.add(changeButton);
-//    southPanel.add(deleteButton);
-
-       
-      // add(southPanel, BorderLayout.SOUTH);
-
         generateButton.addActionListener(e -> generateTimetable());
         saveButton.addActionListener(e -> saveTimetable());
     }
-//    private void generateTimetable() {
-//    Group group = (Group) groupComboBox.getSelectedItem();
-//    Lecture lecturer = (Lecture) lecturerComboBox.getSelectedItem();
-//    String slot = (String) slotComboBox.getSelectedItem();
-//    String type = (String) typeComboBox.getSelectedItem();
-//    String day = (String) dayComboBox.getSelectedItem();
-//    Subject subject = (Subject) subjectComboBox.getSelectedItem();
-//    Venue venue = (Venue) venueComboBox.getSelectedItem();
-//
-//    if (slot.equals("13:00 - 13:40")) {
-//        JOptionPane.showMessageDialog(this, "13:00 to 13:40 is a break. Please select a different time slot.", "Break Time", JOptionPane.WARNING_MESSAGE);
-//        return;
-//    }
-//
-//    String daySlotKey = day + "-" + slot;
-//    String con = Integer.toString(group.getGroupId());
-//    groupTimetables.putIfAbsent(con, new HashMap<>());
-//
-//    Map<String, String> timetable = groupTimetables.get(group.getGroupId());
-//
-//    if (timetable.containsKey(daySlotKey)) {
-//        JOptionPane.showMessageDialog(this, "This slot is already booked for " + group.getGroupName()+ "!", "Error", JOptionPane.ERROR_MESSAGE);
-//        return;
-//    }
-//
-//    String lecturerKey = lecturer.getLectureID()+ "-" + daySlotKey;
-//    if (lecturerAssignments.containsKey(lecturerKey)) {
-//        JOptionPane.showMessageDialog(this, "Lecturer " + lecturer.getLectureName()+ " is already assigned to " + lecturerAssignments.get(lecturerKey) + " at this time!", "Error", JOptionPane.ERROR_MESSAGE);
-//        return;
-//    }
-//
-//    String cellValue = "<html>" + lecturer.getLectureName()+ "<br><b>" + subject.getDescription() + "</b><br>" + venue.getDescription()+ " (" + type + ")" + "</html>";
-//    timetable.put(daySlotKey, cellValue);
-//
-//    lecturerAssignments.put(lecturerKey, venue.getDescription());
-//
-//    int rowIndex = 0;
-//    int columnIndex = 0;
-//
-//    switch (day) {
-//        case "Monday":
-//            rowIndex = 0;
-//            break;
-//        case "Tuesday":
-//            rowIndex = 1;
-//            break;
-//        case "Wednesday":
-//            rowIndex = 2;
-//            break;
-//        case "Thursday":
-//            rowIndex = 3;
-//            break;
-//        case "Friday":
-//            rowIndex = 4;
-//            break;
-//    }
-//
-//    switch (slot) {
-//        case "08:30 - 09:10":
-//            columnIndex = 1;
-//            break;
-//        case "09:15 - 09:55":
-//            columnIndex = 2;
-//            break;
-//        case "10:00 - 10:40":
-//            columnIndex = 3;
-//            break;
-//        case "10:45 - 11:25":
-//            columnIndex = 4;
-//            break;
-//        case "11:30 - 12:10":
-//            columnIndex = 5;
-//            break;
-//        case "12:15 - 12:55":
-//            columnIndex = 6;
-//            break;
-//        case "13:00 - 13:40":
-//            columnIndex = 7;
-//            break;
-//        case "13:45 - 14:25":
-//            columnIndex = 8;
-//            break;
-//        case "14:30 - 15:10":
-//            columnIndex = 9;
-//            break;
-//        case "15:15 - 15:55":
-//            columnIndex = 10;
-//            break;
-//        case "16:00 - 16:40":
-//            columnIndex = 11;
-//            break;
-//        case "16:45 - 17:25":
-//            columnIndex = 12;
-//            break;
-//    }
-//
-//    tableModel.setValueAt(cellValue, rowIndex, columnIndex);
-//
-//    // Save to database
-//    saveTimetableToDatabase(group.getGroupId(), lecturer.getLectureID(), slot, type, day, subject.getSubjectCode(), venue.getVenue_id());
-//}
-
 
     private void generateTimetable() {
-        String group = (String) groupComboBox.getSelectedItem();
-        String lecturer = (String) lecturerComboBox.getSelectedItem();
+        Group group = (Group) groupComboBox.getSelectedItem();
+        String selectedGroup = group.getGroupName();
+        int gk = group.getGroupId();
+        
+        Lecture lecturer = (Lecture) lecturerComboBox.getSelectedItem();
+        String selectedLecture = lecturer.getLectureName()+lecturer.getLectureSurname();
+        int lk = lecturer.getLectureID();
+        
         String slot = (String) slotComboBox.getSelectedItem();
-        String type = (String) typeComboBox.getSelectedItem();
+        
+        
         String day = (String) dayComboBox.getSelectedItem();
-        String subject = (String) subjectComboBox.getSelectedItem();
-        String venue = (String) venueComboBox.getSelectedItem();
+        
+        String type = (String) typeComboBox.getSelectedItem();
+        
+        
+        
+        Subject subject = (Subject) subjectComboBox.getSelectedItem();
+        int sk = subject.getSubjectCode();
+        
+        Venue venue = (Venue) venueComboBox.getSelectedItem();
+         String selectedVenue = venue.toString();
+         int vk = venue.getVenue_id();
+         
+         int slotKey = ss.getSlotIdBySlotTime(slot);
+         
+         
+        
+        
+        ///// thisisis
+        saveSlotToDatabase(slot, day);
 
         if (slot.equals("13:00 - 13:40")) {
             JOptionPane.showMessageDialog(this, "13:00 to 13:40 is a break. Please select a different time slot.", "Break Time", JOptionPane.WARNING_MESSAGE);
@@ -286,9 +171,9 @@ public class GenerateGui extends JPanel {
 
         String daySlotKey = day + "-" + slot;
 
-        groupTimetables.putIfAbsent(group, new HashMap<>());
+        groupTimetables.putIfAbsent(selectedGroup, new HashMap<>());
 
-        Map<String, String> timetable = groupTimetables.get(group);
+        Map<String, String> timetable = groupTimetables.get(selectedGroup);
 
         if (timetable.containsKey(daySlotKey)) {
             JOptionPane.showMessageDialog(this, "This slot is already booked for " + group + "!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -304,7 +189,7 @@ public class GenerateGui extends JPanel {
         String cellValue = "<html>" + lecturer + "<br><b>" + subject + "</b><br>" + venue + " (" + type + ")" + "</html>";
         timetable.put(daySlotKey, cellValue);
 
-        lecturerAssignments.put(lecturerKey, venue);
+        lecturerAssignments.put(lecturerKey, selectedVenue);
 
         int rowIndex = 0;
         int columnIndex = 0;
@@ -402,28 +287,48 @@ public class GenerateGui extends JPanel {
     public void populateGroup(){
         try{
             gDao = new GroupsDao();
-            groups = new String[gDao.Groups().size()];
-            for(int i = 0; i < gDao.Groups().size();i++){
-               groups[i] = gDao.Groups().get(i);
+            list = gDao.Groups();
+            //groups = new String[gDao.Groups().size()];
+            for(Group ll :list){
+                
+                groupComboBox.addItem(ll);
             }
             
             }
             catch(Exception k){
                 
             }
-        //groupComboBox = new JComboBox(groups);
-        groupComboBox = new JComboBox(groups);
-        
+       
     }
+     public void populateLecture() {
+        lDao = new LectureDao();
+         lectureList = lDao.Lecture();
+         for(Lecture l : lectureList){
+             lecturerComboBox.addItem(l);
+         }
+        
+     }
+     public void populateSubject() {
+    try {
+         sDao = new SubjectDao();
+        subjectList =sDao.Subjects();
+        for (Subject ll : subjectList) {
+            subjectComboBox.addItem(ll);
+        }
+        
+    } catch (Exception k) {
+        k.printStackTrace();  
+    }
+}
     public void populateVenue(){
         
         try{
             vDao  = new VenueDao();
-            venue = new String[vDao.Venues().size()];
-            for(int i = 0; i < vDao.Venues().size();i++){
-               venue[i] = vDao.Venues().get(i);
+            venueList = vDao.Venues();
+            for(Venue ll: venueList){
+               venueComboBox.addItem(ll);
             }
-             venueComboBox = new JComboBox(venue);
+            
             
             
         }catch(SQLException k){
@@ -432,28 +337,35 @@ public class GenerateGui extends JPanel {
     }
    
 
-    public void populateSubject() {
-    try {
-        SubjectDao sDao = new SubjectDao();
-        subject = new String[sDao.Subjects().size()];
-        for (int i = 0; i < sDao.Subjects().size(); i++) {
-            subject[i] = sDao.Subjects().get(i);
-        }
-        subjectComboBox = new JComboBox<>(subject);
-    } catch (Exception k) {
-        k.printStackTrace();  
-    }
+    
+    private void saveSlotToDatabase(String slotTime, String dayOfWeek) {
+    Slot slot = new Slot(0, slotTime, dayOfWeek); // slotId is auto-generated
+    SlotDao slotDao = new SlotDao(); // Assuming you have a SlotDao class
+    slotDao.insert(slot);
 }
-     public void populateLecture() {
-        LectureDao lDao = new LectureDao();
-         lecture = new String[lDao.Lecture().size()];
-         for(int i = 0; i < lDao.Lecture().size();i++){
-             lecture[i] = lDao.Lecture().get(i);
-         }
-         lecturerComboBox = new JComboBox<>(lecture);
-     }
+    
+    private void saveAllToTimeTableDatabase(int group, int subject, int lecture, int venue, int slot) {
+        TimeTable timeTableDao = new TimeTable(group,subject,lecture,venue,slot);
+        
+        
+//        ArrayList<TimeTable> list = new ArrayList();
+//        list.add()
+       
+        try{
+        timeTableDao.createTable();
+        timeTableDao.insert(table);
+        }catch(Exception k){
+            
+        }
+        
+        
+        
+        
+        
+    
     
 
     
+}
 }
 
